@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 
 class FileView(APIView):
     """
-    To upload csv file and returning displaying a live stream of what is
+    To upload csv file and displaying a live stream of what is
     happening.
     """
     http_method_names = ['get', 'post']
@@ -100,7 +100,7 @@ class DeleteView(APIView):
     """
     Delete entire data
     """
-    http_method_names = ['get', 'post']
+    http_method_names = ['get']
 
     def get(self, request):
         Products.objects.all().delete()
