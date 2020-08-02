@@ -1,10 +1,13 @@
 import csv
 import logging
 import os
+import webbrowser
 import arrow
+
 from django.conf import settings
 from django.http import StreamingHttpResponse
 
+from product.constants import Stream
 from product.models import Products
 from product.utils import update_obj
 
@@ -41,23 +44,23 @@ class FileToDb:
         """
         bulkcreation as well returning live streaming
         """
-        count = 0
-        while count < 4:
-            if count == 0:
-                message = 'started..\n\n'
-                count += 1
-            elif count == 1:
+        status = 0
+        while status < Stream.STREAM_LIMIT:
+            if status == Stream.STARTED:
+                message = 'Started..\n\n'
+                status += 1
+            elif status == Stream.CSV_LIST:
                 pd_data = self.create_list(filepath)
                 message = 'Reading Csv File..\n\n'
-                count += 1
-            elif count == 2:
+                status += 1
+            elif status == Stream.BULK_CREATE:
                 Products.objects.bulk_create(pd_data, batch_size=500,
                                              ignore_conflicts=True)
                 message = 'Bulk Creating into DB..\n\n'
-                count += 1
+                status += 1
             else:
-                message = 'View  - {}/product/view/'.format(host)
-                count += 1
+                message = webbrowser.open('{}/product/view/'.format(host))
+                status += 1
             yield message
 
     def process_file(self, filepath, host):
