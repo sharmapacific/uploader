@@ -2,26 +2,29 @@
 {% block body_block %}
 <div class="container">
   <div class="jumbotron">
-    <h1>Hey !! Welcome, How are you today.</h1>
     {% if user.is_authenticated %}
-        <h2>Hello {{ user.username }}</h2>
-        <p>
-          Click to upload Csv
-          <a href="{% url 'product:upload' %}">Upload</a>
-        </p>
+    <h1>Hey {{ user.username|title }} !</h1> <h2>Welcome, How are you today.</h2>
+    <hr>
+    <table class="table table-responsive table-striped">
+        <tbody>
+           <tr>
+             <td>Upload Csv</td>
+             <td><a href="{% url 'product:upload' %}">Upload</a></td>
 
-        <p>
-          Click to View
-          <a href="{% url 'product:view' %}">View</a>
-        </p>
-
-        <p>
-          Click to Delete
-          <a href="{% url 'product:delete' %}">Delete</a>
-        </p>
-
+             <td>View Data</td>
+             <td><a href="{% url 'product:view' %}">View</a></td>
+           </tr>
+           <tr></tr>
+           <tr>
+             <td>Delete Entire Data</td>
+             <td><a href="{% url 'product:delete' %}">Delete</a></td>
+             <td>Add Product</td>
+             <td><a href="{% url 'product:create' %}">Add</a></td>
+           </tr>
+         </tbody>
+    </table>
     {% else %}
-        <h2>Register or Login if you'd like to</h2>
+        <h2>Register or Login if you'd like to..</h2>
     {% endif %}
   </div>
 </div>

@@ -1,10 +1,9 @@
 import os
-
 from django.conf import settings
 from django.contrib import messages
 
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 
 from django.shortcuts import render
 from django.urls import reverse
@@ -22,11 +21,11 @@ class FileView(APIView):
         return render(request, 'product/upload.html')
 
     def post(self, request):
-        file1 = request.FILES.get('attachment')
-        if file1:
-            file_path = self.get_file_path(file1)
-            FileToDb().process_file(file_path)
-        return HttpResponse('ok')
+        host = request.get_host()
+        file = request.FILES.get('attachment')
+        file_path = self.get_file_path(file)
+        response = FileToDb().process_file(file_path, host)
+        return response
 
     def get_file_path(self, attachment):
         fs = FileSystemStorage()
@@ -90,3 +89,18 @@ class DeleteView(APIView):
         messages.warning(request, 'Deleted Successfully')
         arg_num = reverse('index')
         return HttpResponseRedirect(arg_num)
+
+
+class SearchView(APIView):
+    http_method_names = ['get', 'post']
+
+    def post(self, request):
+        data = request.POST.dict()
+        param = data.get('search_val')
+        if data.get('pd_att') == 'sku':
+            objs_qs = Products.objects.filter(sku__icontains=param)
+        elif data.get('pd_att') == 'name':
+            objs_qs = Products.objects.filter(name__icontains=param)
+        objs = paginate_objects(request, objs_qs)
+        context = {'products': objs}
+        return render(request, 'product/view.html', context)

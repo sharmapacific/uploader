@@ -3,6 +3,7 @@ from product.views import (
                     CreateView,
                     DeleteView,
                     FileView,
+                    SearchView,
                     TableView,
                     UpdateView
                 )
@@ -15,4 +16,5 @@ urlpatterns = [
     url(r'^create/$', CreateView.as_view(), name='create'),
     url(r'^update/$', UpdateView.as_view(), name='update'),
     url(r'^delete/$', DeleteView.as_view(), name='delete'),
+    url(r'^search/$', SearchView.as_view(), name='search'),
 ]

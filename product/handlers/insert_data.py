@@ -1,12 +1,13 @@
 import csv
 import logging
 import os
-
 import arrow
 from django.conf import settings
+from django.http import StreamingHttpResponse
 
 from product.models import Products
 from product.utils import update_obj
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -33,11 +34,31 @@ class FileToDb:
                 ))
         return pd_list
 
-    def process_file(self, filepath):
-        pd_data = self.create_list(filepath)
-        Products.objects.bulk_create(pd_data, batch_size=500,
-                                     ignore_conflicts=True)
-        return
+    def bulk_creation(self, filepath, host):
+        count = 0
+        while count < 4:
+            if count == 0:
+                message = 'started..\n\n'
+                count += 1
+            elif count == 1:
+                pd_data = self.create_list(filepath)
+                message = 'Reading Csv File..\n\n'
+                count += 1
+            elif count == 2:
+                Products.objects.bulk_create(pd_data, batch_size=500,
+                                             ignore_conflicts=True)
+                message = 'Bulk Creating into DB..\n\n'
+                count += 1
+            else:
+                message = 'View  - {}/product/view/'.format(host)
+                count += 1
+            yield message
+
+    def process_file(self, filepath, host):
+        stream = self.bulk_creation(filepath, host)
+        response = StreamingHttpResponse(stream, status=200, content_type='text/event-stream')
+        response['Cache-Control'] = 'no-cache'
+        return response
 
     def validate_duplicate(self, sku):
         return Products.objects.filter(sku__icontains=sku).exists()
@@ -55,7 +76,7 @@ class FileToDb:
             Products.objects.create(**data)
             return {'message': 'Product has been added Successfully'}
         except Exception as e:
-            logger.error('Exception-{}'.format(e))
+            logger.error('Exception-{}, data-{}'.format(e, req_data))
             return {'message': 'Unable to create'}
 
     def delete_product(self, sku):
@@ -63,14 +84,14 @@ class FileToDb:
             Products.objects.get(sku=sku).delete()
             return {'message': 'Deleted Successfully'}
         except Exception as e:
-            print(e)
+            logger.error('Exception-{}, sku-{}'.format(e, sku))
             return {'message': 'Unable to Delete'}
 
     def get_product(self, sku):
         try:
             return True, Products.objects.get(sku=sku)
         except Exception as e:
-            print(e)
+            logger.error('Exception-{}, sku-{}'.format(e, sku))
             return False, {'message': 'Unable to Fetch data'}
 
     def update_product(self, data):
@@ -86,5 +107,5 @@ class FileToDb:
                 update_obj(_, data)
                 return {'message': 'Updated Successfully'}
         except Exception as e:
-            logger.error('Exception-{}'.format(e))
+            logger.error('Exception-{}, data-{}'.format(e, data))
             return {'message': 'Unable to Update'}
