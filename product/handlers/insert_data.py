@@ -20,6 +20,9 @@ logger = logging.LoggerAdapter(logger, {'app': 'product'})
 
 class FileToDb:
     def create_list(self, filepath):
+        """
+        Putting all csv content in list for bulk_create
+        """
         pd_list = []
         with open(filepath, 'r', encoding='ascii', errors='ignore') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -35,6 +38,9 @@ class FileToDb:
         return pd_list
 
     def bulk_creation(self, filepath, host):
+        """
+        bulkcreation as well returning live streaming
+        """
         count = 0
         while count < 4:
             if count == 0:
@@ -55,15 +61,24 @@ class FileToDb:
             yield message
 
     def process_file(self, filepath, host):
+        """
+        Processor function for insert csv into DB
+        """
         stream = self.bulk_creation(filepath, host)
         response = StreamingHttpResponse(stream, status=200, content_type='text/event-stream')
         response['Cache-Control'] = 'no-cache'
         return response
 
     def validate_duplicate(self, sku):
+        """
+        validating if sku exists already in DB
+        """
         return Products.objects.filter(sku__icontains=sku).exists()
 
     def create_product(self, req_data):
+        """
+        Creating a new product after duplication validation
+        """
         if self.validate_duplicate(req_data['sku']):
             return {'message': 'SKU already exists'}
         try:
@@ -80,6 +95,9 @@ class FileToDb:
             return {'message': 'Unable to create'}
 
     def delete_product(self, sku):
+        """
+        To delete a product from database
+        """
         try:
             Products.objects.get(sku=sku).delete()
             return {'message': 'Deleted Successfully'}
@@ -88,6 +106,9 @@ class FileToDb:
             return {'message': 'Unable to Delete'}
 
     def get_product(self, sku):
+        """
+        Retrieve record from DB
+        """
         try:
             return True, Products.objects.get(sku=sku)
         except Exception as e:
@@ -95,6 +116,9 @@ class FileToDb:
             return False, {'message': 'Unable to Fetch data'}
 
     def update_product(self, data):
+        """
+        Updating Product in database
+        """
         try:
             pd_obj, _ = self.get_product(data['sku'])
             if pd_obj:

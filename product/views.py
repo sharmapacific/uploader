@@ -1,4 +1,5 @@
 import os
+
 from django.conf import settings
 from django.contrib import messages
 
@@ -10,17 +11,22 @@ from django.urls import reverse
 from product.handlers.insert_data import FileToDb
 
 from product.models import Products
-from product.utils import paginate_objects
+from product.utils import paginate_objects, rm_existing_file
 from rest_framework.views import APIView
 
 
 class FileView(APIView):
+    """
+    To upload csv file and returning displaying a live stream of what is
+    happening.
+    """
     http_method_names = ['get', 'post']
 
     def get(self, request):
         return render(request, 'product/upload.html')
 
     def post(self, request):
+        rm_existing_file()
         host = request.get_host()
         file = request.FILES.get('attachment')
         file_path = self.get_file_path(file)
@@ -35,6 +41,9 @@ class FileView(APIView):
 
 
 class TableView(APIView):
+    """
+    To view the contant in datatable format.
+    """
     http_method_names = ['get']
 
     def get(self, request):
@@ -45,6 +54,9 @@ class TableView(APIView):
 
 
 class CreateView(APIView):
+    """
+    Add a new product manually
+    """
     http_method_names = ['get', 'post']
 
     def get(self, request):
@@ -59,6 +71,9 @@ class CreateView(APIView):
 
 
 class UpdateView(APIView):
+    """
+    Update and delete a particular record in table
+    """
     http_method_names = ['get', 'post']
 
     def get(self, request):
@@ -82,17 +97,23 @@ class UpdateView(APIView):
 
 
 class DeleteView(APIView):
+    """
+    Delete entire data
+    """
     http_method_names = ['get', 'post']
 
     def get(self, request):
-        # Products.objects.all().delete()
+        Products.objects.all().delete()
         messages.warning(request, 'Deleted Successfully')
         arg_num = reverse('index')
         return HttpResponseRedirect(arg_num)
 
 
 class SearchView(APIView):
-    http_method_names = ['get', 'post']
+    """
+    To search based on sku and product name in entire data
+    """
+    http_method_names = ['post']
 
     def post(self, request):
         data = request.POST.dict()

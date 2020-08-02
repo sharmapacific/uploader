@@ -13,3 +13,7 @@ class Products(models.Model):
 
     def __str__(self):
         return self.sku
+
+    class Meta:
+        verbose_name = 'Product'
+        verbose_name_plural = 'Product Informations'

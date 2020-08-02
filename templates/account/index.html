@@ -17,7 +17,7 @@
            <tr></tr>
            <tr>
              <td>Delete Entire Data</td>
-             <td><a href="{% url 'product:delete' %}">Delete</a></td>
+             <td><a href="{% url 'product:delete' %}" onclick="return confirm('Are you sure you want to delete ?');">Delete</a></td>
              <td>Add Product</td>
              <td><a href="{% url 'product:create' %}">Add</a></td>
            </tr>
