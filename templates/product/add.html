@@ -1,0 +1,82 @@
+{% extends "account/base.html" %}
+{% load tz %}
+{% load staticfiles %}
+
+{% block style %}
+  <style>
+      .red-star {
+        color: red;
+    }
+  </style>
+{% endblock %}
+
+{% block body_block %}
+
+<div class="breadcrumb-pannel">
+    <div class="row ">
+        <div class=" col-md-10" >
+            <div class="btn-group btn-breadcrumb">
+                <a href="/" class="btn btn-default"><i class="glyphicon glyphicon-home"></i></a>
+                 <a href="/product/view/" class="btn btn-default">View</a>
+                <a href="#" class="btn btn-default"> Add New </a>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+
+<form class="form-horizontal" method="post" enctype="multipart/form-data" action="{% url 'product:create' %}">
+    {% csrf_token %}
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Add New Product</h3>
+        </div>
+    <div class="panel-body">
+      <table class="table table-responsive table-striped" id="new_celeb">
+      <tbody>
+
+        <tr>
+            <td>
+              <label for="ads_title">SKU<span class="red-star">&#42;</span></label></td>
+            <td>
+                <input type="text" class="form-control" id="sku" placeholder="SKU"  name="sku" required/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <label for="ads_title">Name</label></td>
+            <td>
+                <input type="text" class="form-control"  id="name" placeholder="Product Name"  name="name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <label for="ads_title">Description</label></td>
+            <td>
+                <input type="text" class="form-control" id="description" placeholder="Product Description"  name="description" />
+            </td>
+        </tr>
+
+        <tr>
+          <td>
+            <button name="_method" value='_PUT'  style="margin-right: 18px;"  class="btn mr-10 btn-primary">Submit</button>
+          </td><td colspan=5></td>
+        </tr>
+       </tbody>
+      </table>
+      </div>
+      </div>
+
+
+</form>
+
+<script>
+
+$(function(){
+    $('input[type="text"]').change(function(){
+        this.value = $.trim(this.value);
+    });
+});
+
+</script>
+{% endblock %}

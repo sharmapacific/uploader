@@ -1,0 +1,100 @@
+{% extends "account/base.html" %}
+{% load tz %}
+{% load staticfiles %}
+
+{% block style %}
+<style media="screen">
+.glyphicon {
+  padding: 2px;
+  font-size: 17px;
+}
+</style>
+{% endblock %}
+
+{% block body_block %}
+
+<div class="breadcrumb-pannel">
+    <div class="row ">
+        <div class="float-left col-md-10">
+            <div class="btn-group btn-breadcrumb">
+                <a href="/" class="btn btn-default"><i class="glyphicon glyphicon-home"></i></a>
+                <a href="/" class="btn btn-default">Home</a>
+            </div>
+        </div>
+        <div class="col-md-2 float-right">
+            <a href="/product/create/" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add Product</a>
+        </div>
+    </div>
+</div>
+<hr>
+<table id="example" class="table table-striped table-bordered" >
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>SKU</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created At</th>
+            <th>Modified At</th>
+            <th style="text-align:center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr class="user-indexing-row">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ product.sku | title }}</td>
+            <td >{{ product.name | title }}</td>
+            <td>{{ product.description | title }}</td>
+            <td>{{ product.created_at }}</td>
+            <td>{{ product.modified_at }}</td>
+
+            <td style="text-align:center">
+            <span class="">
+              <a title="edit" href="{% url 'product:update' %}?sku={{product.sku}}">
+              <span class="glyphicon glyphicon-edit"> </span> </a> &nbsp;&nbsp;
+
+               <a title="Delete" href="{% url 'product:update' %}?sku={{product.sku}}&delete=true">
+               <span class="glyphicon glyphicon-trash" onclick="return confirm('Are you sure you want to delete ?');"> </span></a> &nbsp;&nbsp;
+
+            </span>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if products.has_other_pages %}
+<nav aria-label="Page navigation">
+    <ul class="pager">
+        {% if products.has_previous %}
+        <li class="previous"><a href="{% if search_url %}?{{ search_url }}&page={{ products.previous_page_number }} {% else %}?page={{ products.previous_page_number }}{% endif %}"><span aria-hidden="true">&larr;</span>
+                Previous</a></li>
+        {% else %}
+        <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Previous</a></li>
+        {% endif %}
+        <li>
+            <span class="current">
+                Page {{ products.number }} of {{ products.paginator.num_pages }}
+            </span>
+        </li>
+        {% if products.has_next %}
+        <li class="next"><a href="{% if search_url %}?{{ search_url }}&page={{ products.next_page_number }} {% else %}?page={{ products.next_page_number }}{% endif %}">Next <span aria-hidden="true">&rarr;</span></a>
+        </li>
+        {% else %}
+        <li class="next disabled"><a>Next <span aria-hidden="true">&rarr;</span></a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+
+<script>
+$(document).ready(function() {
+    $('#example').DataTable();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "account/base.html" %}
+{% block body_block %}
+<div class="container">
+  <div class="jumbotron">
+    <h1>Hey !! Welcome, How are you today.</h1>
+    {% if user.is_authenticated %}
+        <h2>Hello {{ user.username }}</h2>
+        <p>
+          Click to upload Csv
+          <a href="{% url 'product:upload' %}">Upload</a>
+        </p>
+
+        <p>
+          Click to View
+          <a href="{% url 'product:view' %}">View</a>
+        </p>
+
+        <p>
+          Click to Delete
+          <a href="{% url 'product:delete' %}">Delete</a>
+        </p>
+
+    {% else %}
+        <h2>Register or Login if you'd like to</h2>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

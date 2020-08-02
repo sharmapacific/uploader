@@ -1,0 +1,61 @@
+{% extends "account/base.html" %}
+{% load tz %}
+
+{% block style %}
+  <style>
+    .jumbotron {
+      text-align: center;
+    }
+    #home {
+      float: right;
+      height: 35px;
+      color: #fff;
+      background: #337ab7;
+      padding: 10px;
+      margin-top: -20px;
+    }
+    .divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+  </style>
+{% endblock %}
+
+  {% block jumbotron %}
+
+
+<hr>
+
+          <div class="jumbotron">
+
+                <form class="form-horizontal"
+                      method="post"
+                      enctype="multipart/form-data"
+                      action="{% url 'product:upload' %}">
+                      {% csrf_token %}
+
+                      <div class="form-group">
+
+
+                    <div class="form-group">
+                      <label for="attachment" class="col-sm-5 col-form-label">Upload Attachment</label>
+                      <div class="col-sm-4">
+                        <input type="file" class="form-control"
+                               id="attachment"
+                               name="attachment"
+                               required
+                               >
+                      </div>
+                    </div>
+
+
+                    <hr>
+
+                      <button type="submit" name="_method" value="upload"
+                      class="btn btn-primary">upload</button>
+
+
+              </form>
+          </div>
+{% endblock %}
