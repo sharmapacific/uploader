@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib import messages
@@ -8,8 +9,8 @@ from django.http import HttpResponseRedirect
 
 from django.shortcuts import render
 from django.urls import reverse
-from product.handlers.insert_data import FileToDb
 
+from product.handlers.insert_data import FileToDb
 from product.models import Products
 from product.utils import paginate_objects, rm_existing_file
 from rest_framework.views import APIView
@@ -17,8 +18,8 @@ from rest_framework.views import APIView
 
 class FileView(APIView):
     """
-    To upload csv file and displaying a live stream of what is
-    happening.
+    To upload csv file and displaying a live stream for file size upto 15 MB,
+    File greater than 15 MB will get upload asynchronously
     """
     http_method_names = ['get', 'post']
 
@@ -30,8 +31,15 @@ class FileView(APIView):
         host = request.get_host()
         file = request.FILES.get('attachment')
         file_path = self.get_file_path(file)
-        response = FileToDb().process_file(file_path, host)
-        return response
+        file_stat = Path(file_path).stat().st_size
+        if (file_stat/(1024*1024) > 15):    # validating file size
+            response = FileToDb().async_upload(file_path)
+            messages.warning(request, response['message'])
+            arg_num = reverse('index')
+            return HttpResponseRedirect(arg_num)
+        else:
+            response = FileToDb().process_file(file_path, host)
+            return response
 
     def get_file_path(self, attachment):
         fs = FileSystemStorage()

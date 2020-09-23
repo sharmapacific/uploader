@@ -3,6 +3,7 @@ import logging
 import os
 import webbrowser
 import arrow
+import threading
 
 from django.conf import settings
 from django.http import StreamingHttpResponse
@@ -59,7 +60,7 @@ class FileToDb:
                 message = 'Bulk Creating into DB..\n\n'
                 status += 1
             else:
-                message = webbrowser.open('{}/product/view/'.format(host))
+                message = 'Data insertion Done. \n\nView  - {}/product/view/'.format(host)
                 status += 1
             yield message
 
@@ -71,6 +72,22 @@ class FileToDb:
         response = StreamingHttpResponse(stream, status=200, content_type='text/event-stream')
         response['Cache-Control'] = 'no-cache'
         return response
+
+    def skip_streaming(self, filepath):
+        """
+        skip live stream in case of large file
+        """
+        pd_data = self.create_list(filepath)
+        Products.objects.bulk_create(pd_data, batch_size=500,
+                                     ignore_conflicts=True)
+        return {'message': 'process'}
+
+    def async_upload(self, filepath):
+        """
+        asynchronously uploading csv
+        """
+        threading.Thread(target=self.skip_streaming, args=(filepath,)).start()
+        return {'message': 'Csv Uploading asynchronously..'}
 
     def validate_duplicate(self, sku):
         """
