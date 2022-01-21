@@ -29,7 +29,7 @@ et-xmlfile==1.0.1
 future==0.18.2
 haystack==0.42
 ipdb==0.13.3
-ipython==7.13.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 isort==5.2.1
 jdcal==1.4.1
