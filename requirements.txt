@@ -37,7 +37,7 @@ jedi==0.17.0
 joblib==0.15.1
 jupyter-highlight-selected-word==0.2.0
 jupyter-latex-envs==1.4.6
-numpy==1.18.5
+numpy==1.22.0
 odfpy==1.4.1
 openpyxl==3.0.4
 pandas==1.0.4
