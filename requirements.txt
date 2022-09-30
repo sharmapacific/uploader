@@ -34,7 +34,7 @@ ipython-genutils==0.2.0
 isort==5.2.1
 jdcal==1.4.1
 jedi==0.17.0
-joblib==0.15.1
+joblib==1.2.0
 jupyter-highlight-selected-word==0.2.0
 jupyter-latex-envs==1.4.6
 numpy==1.18.5
